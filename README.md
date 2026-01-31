@@ -53,6 +53,12 @@ We don't sell 40-hour courses. We sell **time** and **precision**.
 - Skills progress tracking across teams
 - Traditional vs Adaptive comparison view
 
+### 🔄 NotebookLM Integration
+- Automated content updates from curated security research
+- API endpoints for content synchronization
+- Admin content sync page
+- Real-time update notifications in dashboard
+
 ## 🛠️ Tech Stack
 
 - **Framework**: Next.js 14 (App Router)
@@ -139,12 +145,51 @@ The platform uses a professional design system with:
 - Adaptive: 8.7/10
 - **Improvement: +50%**
 
-## 🔮 Future Enhancements
+## 🔄 NotebookLM Integration
 
-### NotebookLM Integration
-- Automated content updates from latest research
-- AI-powered module generation
-- Real-time threat intelligence integration
+### ✅ Implemented Features
+
+The platform now includes full integration with NotebookLM MCP server:
+
+- **Python MCP Client** (`python-services/notebooklm_client.py`)
+  - Connects to NotebookLM MCP server via stdio
+  - Queries notebooks for latest security research
+  - Returns structured JSON responses
+
+- **API Endpoints**
+  - `GET/POST /api/content-update` - Fetch latest content updates
+  - `POST /api/notebook/query` - Query with custom questions
+  - Response caching (5-minute TTL)
+  - Error handling and fallbacks
+
+- **Frontend Integration**
+  - Dashboard shows last sync timestamp
+  - Admin page (`/admin/content-sync`) for manual synchronization
+  - Content update notifications
+  - Fresh/stale content indicators
+
+### Setup
+
+1. Install NotebookLM MCP server:
+```bash
+uvx notebooklm-mcp --help
+```
+
+2. Authenticate:
+```bash
+uvx notebooklm-mcp-auth
+```
+
+3. Create a NotebookLM notebook with Agentic AI Security sources
+
+4. Test the integration:
+```bash
+python3 python-services/notebooklm_client.py --test
+```
+
+See `python-services/README.md` for detailed setup instructions.
+
+## 🔮 Future Enhancements
 
 ### Backend Services
 - User authentication
@@ -181,12 +226,18 @@ This is a proof-of-concept demonstration project.
 
 ## 🤝 Contributing
 
-This is a POC project. For production deployment, consider:
-1. Adding backend API
-2. Implementing authentication
-3. Database integration
-4. NotebookLM MCP integration
-5. Real-time AI tutor with LLM API
+This is a POC project demonstrating:
+1. ✅ Adaptive learning algorithms
+2. ✅ Skills gap identification
+3. ✅ Personalized learning paths
+4. ✅ NotebookLM integration for content updates
+5. ✅ Admin tools for content management
+
+For production deployment, consider:
+- User authentication
+- Database integration for persistence
+- Scheduled content synchronization
+- Real-time AI tutor with LLM API
 
 ## 📧 Contact
 

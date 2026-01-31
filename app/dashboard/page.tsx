@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { fetchLatestContent, getTimeAgo, type ContentUpdate } from '@/lib/content-manager';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -14,7 +15,9 @@ import {
     TrendingUp,
     BookOpen,
     Shield,
-    AlertCircle
+    AlertCircle,
+    Database,
+    RefreshCw
 } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -22,6 +25,7 @@ export default function DashboardPage() {
     const [results, setResults] = useState<AssessmentResult[]>([]);
     const [learningPath, setLearningPath] = useState<LearningModule[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [contentUpdates, setContentUpdates] = useState<ContentUpdate | null>(null);
 
     useEffect(() => {
         const storedResults = localStorage.getItem('assessmentResults');
@@ -35,6 +39,9 @@ export default function DashboardPage() {
         setResults(JSON.parse(storedResults));
         setLearningPath(JSON.parse(storedPath));
         setIsLoading(false);
+
+        // Load content updates
+        fetchLatestContent().then(setContentUpdates);
     }, [router]);
 
     if (isLoading) {
@@ -187,8 +194,8 @@ export default function DashboardPage() {
                                                 </div>
                                                 <div className="flex flex-col items-end gap-2">
                                                     <div className={`px-3 py-1 rounded-full text-xs font-medium ${module.difficulty === 'beginner' ? 'bg-green-100 text-green-700' :
-                                                            module.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-700' :
-                                                                'bg-red-100 text-red-700'
+                                                        module.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-700' :
+                                                            'bg-red-100 text-red-700'
                                                         }`}>
                                                         {module.difficulty}
                                                     </div>
@@ -213,6 +220,36 @@ export default function DashboardPage() {
                         )}
                     </CardContent>
                 </Card>
+
+                {/* Content Updates Notification */}
+                {contentUpdates?.success && (
+                    <Card className="mt-8 border-2 border-blue-200 dark:border-blue-800">
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Database className="w-5 h-5 text-blue-600" />
+                                        Actualizaciones de Contenido
+                                    </CardTitle>
+                                    <CardDescription>
+                                        Última sincronización: {contentUpdates.timestamp ? getTimeAgo(contentUpdates.timestamp) : 'Nunca'}
+                                    </CardDescription>
+                                </div>
+                                <Link href="/admin/content-sync">
+                                    <Button variant="outline" size="sm">
+                                        <RefreshCw className="w-4 h-4 mr-2" />
+                                        Sincronizar
+                                    </Button>
+                                </Link>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground">
+                                ✅ Los módulos de aprendizaje están actualizados con las últimas investigaciones en seguridad de IA
+                            </p>
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* Action Buttons */}
                 <div className="mt-8 flex gap-4 justify-center">
